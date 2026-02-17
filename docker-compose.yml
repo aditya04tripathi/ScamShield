@@ -12,6 +12,39 @@ services:
       timeout: 5s
       retries: 5
 
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  ollama:
+    image: ollama/ollama:latest
+    restart: unless-stopped
+    ports:
+      - "11434:11434"
+    volumes:
+      - ollama_data:/root/.ollama
+    environment:
+      - OLLAMA_HOST=0.0.0.0
+    entrypoint:
+      [
+        "/bin/sh",
+        "-c",
+        "/bin/ollama serve & sleep 5 && /bin/ollama pull qwen2.5:0.5b && wait",
+      ]
+    healthcheck:
+      test: ["CMD", "ollama", "list"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 60s
+
   backend:
     build:
       context: ./backend
@@ -23,9 +56,16 @@ services:
       - ./backend/models:/app/models
     environment:
       - DATABASE_URL=sqlite:///./scam_detection.db
-      - OLLAMA_BASE_URL=http://host.docker.internal:11434
+      - OLLAMA_BASE_URL=http://ollama:11434
+      - LLM_MODEL=qwen2.5:0.5b
+      - REDIS_URL=redis://redis:6379/0
       - HF_HOME=/app/models
       - BACKEND_CORS_ORIGINS=["http://localhost:3000","http://frontend:3000"]
+    depends_on:
+      redis:
+        condition: service_healthy
+      ollama:
+        condition: service_healthy
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:8000/health"]
       interval: 15s
@@ -51,3 +91,4 @@ services:
 
 volumes:
   mongo_data:
+  ollama_data:
