@@ -1,112 +1,81 @@
-# ScamShield Backend
+# ScamShield Backend 🐍
+
+The core API and intelligence orchestration layer for ScamShield, powered by FastAPI.
 
 ## Overview
 
-The **ScamShield Backend** is a high-performance FastAPI microservice designed for multi-modal scam detection. It leverages local Transformer models, heuristic engines, and external LLM integrations to analyze potentially malicious content.
+This service handles all machine learning inference and logic for detected scams. It coordinates between specialized transformer models, spectral analysis tools, and local LLMs to provide a unified risk assessment.
 
 ## Key Features
 
-- **High-Performance API:** FastAPI with Uvicorn for asynchronous request handling.
-- **Local Inference:** Runs HuggingFace transformers locally for privacy and speed.
-- **Heuristic Engine:** Rule-based fallback and boosting logic for common scam patterns.
-- **Audio Analysis:** Spectral feature extraction using Librosa for deepfake detection.
-- **Prompt Injection Detection:** Specialized models to detect malicious LLM prompts.
+- **FastAPI Core**: Highly performant asynchronous API.
+- **Model Orchestration**: Manages weights and inference for multiple modalities.
+- **Local LLM Integration**: Uses LangChain and Ollama for intelligent report generation.
+- **Spectral Audio Engine**: Advanced feature extraction for deepfake detection.
+- **Task Management**: Integration with Redis for handling intensive scans.
 
 ## Tech Stack
 
-- **Framework:** FastAPI 0.109, Pydantic
-- **Runtime:** Python 3.13
-- **ML Libraries:** PyTorch, Transformers, Scikit-learn
-- **Audio Processing:** Librosa, Soundfile, FFmpeg
-- **LLM Integration:** LangChain, Ollama
-
-## ML Models Used
-
-| Modality   | Model                                                   | Task                          |
-| ---------- | ------------------------------------------------------- | ----------------------------- |
-| **Email**  | `cybersectony/phishing-email-detection-distilbert_v2.1` | Phishing Classification       |
-| **URL**    | `darshan8950/phishing_url_detection_BERT`               | Malicious URL Detection       |
-| **Prompt** | `protectai/deberta-v3-base-prompt-injection-v2`         | Injection/Jailbreak Detection |
-| **Audio**  | Custom Spectral Analysis (Librosa)                      | Synthetic Speech Detection    |
-
-## Architecture Overview
-
-This service operates as a stateless microservice, accepting JSON/Form-data requests and returning analysis results.
-
-For detailed backend architectural diagrams, including class structures and flow sequences, please refer to the **[Documentation Folder](../docs)**.
+- **FastAPI**
+- **LangChain**
+- **Ollama** (Local Inference)
+- **Hugging Face Transformers**
+- **Librosa** (Audio Processing)
+- **Redis**
 
 ## Setup and Installation
 
 ### Prerequisites
 
 - Python 3.11+
-- FFmpeg (for audio support)
-- ~4GB RAM available for models
+- FFmpeg (for audio processing)
 
-### Installation
+### Local Development
 
-```bash
-cd backend
-python3 -m venv venv
-source venv/bin/activate
-pip install -r requirements.txt
-```
+1. **Navigate to the backend directory**:
 
-### Model Setup
+   ```bash
+   cd backend
+   ```
 
-You must download the models before searching to avoid runtime timeouts.
+2. **Create and activate a virtual environment**:
 
-```bash
-python preload_models.py
-```
+   ```bash
+   python -m venv venv
+   source venv/bin/activate
+   ```
 
-### Running Locally
+3. **Install dependencies**:
 
-```bash
-uvicorn main:app --host 0.0.0.0 --port 8000 --reload
-```
+   ```bash
+   pip install -r requirements.txt
+   ```
 
-Interactive docs available at `http://localhost:8000/docs`.
+4. **Run the preloader (Optional)**:
+   Pre-load models from Hugging Face to avoid latency on first run.
 
-## Usage
+   ```bash
+   python preload_models.py
+   ```
 
-**Example Request (Email Scan):**
-
-```bash
-curl -X POST "http://localhost:8000/scan/email" \
-     -H "Content-Type: application/json" \
-     -d '{"content": "Urgent: Verify your account now..."}'
-```
+5. **Start the server**:
+   ```bash
+   uvicorn main:app --reload
+   ```
 
 ## Configuration
 
-Environment variables in `.env` (or system env):
+Configuration is managed in `app/core/config.py`. Key environment variables include:
 
-```env
-DATABASE_URL=sqlite:///./scam_detection.db
-OLLAMA_BASE_URL=http://localhost:11434
-LLM_MODEL=qwen2.5:0.5b
-HF_HOME=./models
-BACKEND_CORS_ORIGINS=["http://localhost:3000"]
-```
+- `OLLAMA_BASE_URL`: URL for the local Ollama instance.
+- `REDIS_URL`: Connection string for Redis.
+- `LLM_MODEL`: The LLM model name (e.g., `qwen2.5:0.5b`).
 
-## Deployment
+## Documentation
 
-A `Dockerfile` is provided for containerization.
+- [Backend SRS](./SRS.md)
+- [Project-level SRS](../SRS.md)
 
-```bash
-docker build -t scamshield-backend .
-docker run -p 8000:8000 -v $(pwd)/models:/app/models scamshield-backend
-```
+## License
 
-_Note: Mounting the `models` volume is recommended to persist downloaded weights._
-
-## Limitations and Assumptions
-
-- **Cold Start:** First request to a model class may take 2-3 seconds for lazy loading (can be mitigated by warm-up scripts).
-- **Dependencies:** `librosa` and `soundfile` rely on system-level `libsndfile` and `ffmpeg`.
-
-## Future Improvements
-
-- **GPU Acceleration:** Add CUDA support in Dockerfile.
-- **Model Quantization:** Switch to ONNX runtime for faster CPU inference.
+Licensed under the [MIT License](../LICENSE).
