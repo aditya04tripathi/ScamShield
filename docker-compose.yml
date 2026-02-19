@@ -54,6 +54,7 @@ services:
       - "8000:8000"
     volumes:
       - ./backend/models:/app/models
+      - shared_tmp:/tmp
     environment:
       - DATABASE_URL=sqlite:///./scam_detection.db
       - OLLAMA_BASE_URL=http://ollama:11434
@@ -80,6 +81,8 @@ services:
     restart: unless-stopped
     ports:
       - "3000:3000"
+    volumes:
+      - shared_tmp:/tmp
     environment:
       - MONGODB_URI=mongodb://mongo:27017/scam_detection
       - MICROSERVICE_URL=http://backend:8000
@@ -92,3 +95,4 @@ services:
 volumes:
   mongo_data:
   ollama_data:
+  shared_tmp:
