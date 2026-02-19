@@ -96,6 +96,8 @@ This spins up:
 - **Frontend** (Port 3000)
 - **Backend** (Port 8000)
 - **MongoDB** (Port 27017)
+- **Ollama** (Port 11434)
+- **Redis** (Port 6379)
 
 ## Limitations and Assumptions
 
