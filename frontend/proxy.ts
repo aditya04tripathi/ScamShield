@@ -27,6 +27,7 @@ export async function proxy(request: NextRequest) {
         return NextResponse.redirect(new URL("/dashboard", request.url));
       }
     } catch (e) {
+      console.error("Middleware Auth Error:", e);
       const response = NextResponse.redirect(
         new URL("/auth/sign-in", request.url),
       );
@@ -39,5 +40,12 @@ export async function proxy(request: NextRequest) {
 }
 
 export const config = {
-  matcher: [],
+  matcher: [
+    "/dashboard/:path*",
+    "/history/:path*",
+    "/profile/:path*",
+    "/scan/:path*",
+    "/admin/:path*",
+    "/auth/:path*",
+  ],
 };

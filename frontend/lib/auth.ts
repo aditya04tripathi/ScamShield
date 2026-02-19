@@ -36,24 +36,33 @@ export async function createSession(user: {
   email: string;
   role: string;
 }) {
+  console.log("Creating session for user:", user.email);
   const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
   const session = await encrypt({ user, expires });
 
-  (await cookies()).set("session", session, {
+  const cookieStore = await cookies();
+  cookieStore.set("session", session, {
     expires,
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: false, // Changed from production check to ensure compatibility in local Docker/HTTP environments
     sameSite: "lax",
     path: "/",
   });
+  console.log("Session cookie set successfully");
 }
 
 export async function getSession(): Promise<Session | null> {
-  const session = (await cookies()).get("session")?.value;
-  if (!session) return null;
+  const cookieStore = await cookies();
+  const session = cookieStore.get("session")?.value;
+  if (!session) {
+    console.log("No session cookie found");
+    return null;
+  }
   try {
-    return (await decrypt(session)) as Session;
+    const decrypted = await decrypt(session);
+    return decrypted as Session;
   } catch (error) {
+    console.error("Failed to decrypt session cookie:", error);
     return null;
   }
 }
