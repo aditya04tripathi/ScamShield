@@ -3,6 +3,7 @@ name: scamshield
 services:
   mongo:
     image: mongo:7
+    pull_policy: always
     restart: unless-stopped
     volumes:
       - mongo_data:/data/db
@@ -16,6 +17,7 @@ services:
 
   redis:
     image: redis:7-alpine
+    pull_policy: always
     restart: unless-stopped
     networks:
       - backend_internal
@@ -27,17 +29,12 @@ services:
 
   ollama:
     image: ollama/ollama:latest
+    pull_policy: always
     restart: unless-stopped
     volumes:
       - ollama_data:/root/.ollama
     environment:
       OLLAMA_HOST: 0.0.0.0
-    entrypoint:
-      [
-        "/bin/sh",
-        "-c",
-        "/bin/ollama serve & sleep 5 && /bin/ollama pull qwen2.5:0.5b && wait",
-      ]
     networks:
       - backend_internal
     healthcheck:
@@ -48,9 +45,8 @@ services:
       start_period: 60s
 
   backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
+    image: ghcr.io/aditya04tripathi/scamshield-backend:${IMAGE_TAG:-latest}
+    pull_policy: always
     restart: unless-stopped
     volumes:
       - backend_data:/app/data
@@ -78,9 +74,8 @@ services:
       start_period: 30s
 
   frontend:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    image: ghcr.io/aditya04tripathi/scamshield:${IMAGE_TAG:-latest}
+    pull_policy: always
     restart: unless-stopped
     ports:
       - "${PORT:-49153}:${PORT:-49153}"
@@ -91,7 +86,7 @@ services:
       HOSTNAME: 0.0.0.0
       MONGODB_URI: mongodb://mongo:27017/scam_detection
       MICROSERVICE_URL: http://backend:8000
-      JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-use-at-least-32-characters}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
     networks:
       - backend_internal
     depends_on:
@@ -109,3 +104,4 @@ volumes:
 networks:
   backend_internal:
     driver: bridge
+    internal: true
