@@ -8,10 +8,10 @@
     "prepare": "husky install",
     "build": "bun run --cwd frontend build",
     "docker:build": "docker build -t scamshield .",
-    "docker:up": "docker compose up --build -d && echo http://localhost:${PORT:-49153}",
+    "docker:up": "docker compose up --build -d && echo http://localhost:${PORT:-49155}",
     "docker:down": "docker compose down",
     "docker:prod:pull": "docker compose -f docker-compose.prod.yml pull",
-    "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d && echo http://localhost:${PORT:-49153}",
+    "docker:prod:up": "docker compose -f docker-compose.prod.yml up -d && echo http://localhost:${PORT:-49155}",
     "docker:prod:down": "docker compose -f docker-compose.prod.yml down"
   }
 }

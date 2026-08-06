@@ -62,7 +62,7 @@ services:
       LLM_MODEL: qwen2.5:0.5b
       REDIS_URL: redis://redis:6379/0
       HF_HOME: /app/models
-      BACKEND_CORS_ORIGINS: '["http://localhost:49153","http://frontend:49153"]'
+      BACKEND_CORS_ORIGINS: '["http://localhost:49155","http://frontend:49155"]'
     networks:
       - backend_internal
     depends_on:
@@ -83,11 +83,11 @@ services:
       dockerfile: Dockerfile
     restart: unless-stopped
     ports:
-      - "${PORT:-49153}:${PORT:-49153}"
+      - "${PORT:-49155}:${PORT:-49155}"
     volumes:
       - shared_tmp:/tmp
     environment:
-      PORT: ${PORT:-49153}
+      PORT: ${PORT:-49155}
       HOSTNAME: 0.0.0.0
       MONGODB_URI: mongodb://mongo:27017/scam_detection
       MICROSERVICE_URL: http://backend:8000

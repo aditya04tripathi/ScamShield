@@ -17,12 +17,12 @@ WORKDIR /app
 ENV NODE_ENV=production
 ENV NEXT_TELEMETRY_DISABLED=1
 ENV HOSTNAME=0.0.0.0
-ENV PORT=49153
+ENV PORT=49155
 
 COPY --from=builder /app/frontend/.next/standalone ./
 COPY --from=builder /app/frontend/.next/static ./.next/static
 COPY --from=builder /app/frontend/public ./public
 
-EXPOSE 49153
+EXPOSE 49155
 
 CMD ["bun", "server.js"]
