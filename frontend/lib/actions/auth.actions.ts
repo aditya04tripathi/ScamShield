@@ -9,11 +9,19 @@ import { revalidatePath } from "next/cache";
 
 export async function signUp(prevState: any, formData: FormData) {
   try {
-    const email = formData.get("email") as string;
+    const email = String(formData.get("email") || "")
+      .trim()
+      .toLowerCase();
     const password = formData.get("password") as string;
+    const firstName = String(formData.get("firstName") || "").trim();
+    const lastName = String(formData.get("lastName") || "").trim();
 
     if (!email || !password) {
       return { error: "Please enter both email and password." };
+    }
+
+    if (password.length < 8) {
+      return { error: "Password must be at least 8 characters." };
     }
 
     await connectToDatabase();
@@ -28,8 +36,8 @@ export async function signUp(prevState: any, formData: FormData) {
       email,
       password: hashedPassword,
       role: "user",
-      firstName: "",
-      lastName: "",
+      firstName,
+      lastName,
     });
 
     await createSession({
@@ -46,7 +54,9 @@ export async function signUp(prevState: any, formData: FormData) {
 
 export async function signIn(prevState: any, formData: FormData) {
   try {
-    const email = formData.get("email") as string;
+    const email = String(formData.get("email") || "")
+      .trim()
+      .toLowerCase();
     const password = formData.get("password") as string;
 
     if (!email || !password) {
@@ -126,8 +136,8 @@ export async function changePassword(prevState: any, formData: FormData) {
       return { error: "Please fill in all fields." };
     }
 
-    if (newPassword.length < 6) {
-      return { error: "New password must be at least 6 characters." };
+    if (newPassword.length < 8) {
+      return { error: "New password must be at least 8 characters." };
     }
 
     await connectToDatabase();

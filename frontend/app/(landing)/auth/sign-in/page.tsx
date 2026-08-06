@@ -11,7 +11,7 @@ export const metadata = constructMetadata({
 export default function Login() {
   return (
     <section className="bg-background flex min-h-[calc(100vh-5rem)] px-4">
-      <div className="m-auto w-full max-w-xs">
+      <div className="m-auto w-full max-w-sm">
         <div className="text-center">
           <h1 className="mt-3 font-serif text-4xl font-medium">Sign in</h1>
         </div>

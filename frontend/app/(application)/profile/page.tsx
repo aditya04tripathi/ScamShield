@@ -4,6 +4,8 @@ import SecurityTab from "@/components/profile/security-tab";
 import ReportTab from "@/components/profile/report-tab";
 import { constructMetadata } from "@/lib/generate-metadata";
 import { getUserProfile } from "@/lib/actions/user.action";
+import { getUserReports } from "@/lib/actions/report.actions";
+import { redirect } from "next/navigation";
 
 export const metadata = constructMetadata({
   title: "Profile - ScamShield",
@@ -19,7 +21,14 @@ export default async function ProfilePage({
   const sp = await searchParams;
   const tab = sp?.tab || "general";
 
-  const user = await getUserProfile();
+  const [user, reports] = await Promise.all([
+    getUserProfile(),
+    getUserReports(),
+  ]);
+
+  if (!user) {
+    redirect("/auth/sign-in");
+  }
 
   return (
     <div className="space-y-6">
@@ -38,7 +47,7 @@ export default async function ProfilePage({
         </TabsList>
 
         <TabsContent value="general" className="space-y-4 pt-4">
-          <GeneralTab user={user!} />
+          <GeneralTab user={user} />
         </TabsContent>
 
         <TabsContent value="security" className="space-y-4 pt-4">
@@ -46,7 +55,7 @@ export default async function ProfilePage({
         </TabsContent>
 
         <TabsContent value="report" className="space-y-4 pt-4">
-          <ReportTab />
+          <ReportTab reports={reports} />
         </TabsContent>
       </Tabs>
     </div>

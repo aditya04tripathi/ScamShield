@@ -79,7 +79,7 @@ export async function AppHeader() {
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant={"outline"}>
-                {session?.user?.email || "john@doe.com"}
+                {session?.user?.email || "Account"}
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end">

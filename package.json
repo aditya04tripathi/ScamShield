@@ -5,6 +5,8 @@
     "husky": "^9.1.7"
   },
   "scripts": {
+    "frontend:dev": "bun run --cwd frontend dev",
+    "backend:dev": "bun run --cwd backend dev",
     "prepare": "husky install",
     "build": "bun run --cwd frontend build",
     "docker:build": "docker build -t scamshield .",

@@ -21,6 +21,7 @@ const LoginForm = () => {
           id="email"
           name="email"
           placeholder="you@example.com"
+          autoComplete="email"
           required
         />
       </div>
@@ -29,7 +30,13 @@ const LoginForm = () => {
         <Label htmlFor="password" className="text-sm">
           Password
         </Label>
-        <Input type="password" id="password" name="password" required />
+        <Input
+          type="password"
+          id="password"
+          name="password"
+          autoComplete="current-password"
+          required
+        />
       </div>
 
       {state?.error && <p className="text-sm text-red-500">{state.error}</p>}

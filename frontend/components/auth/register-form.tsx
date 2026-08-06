@@ -12,6 +12,22 @@ const RegisterForm = () => {
 
   return (
     <form action={action} className="mt-12 space-y-4">
+      <div className="grid gap-4 sm:grid-cols-2">
+        <div className="space-y-2">
+          <Label htmlFor="firstName" className="text-sm">
+            First name
+          </Label>
+          <Input id="firstName" name="firstName" autoComplete="given-name" />
+        </div>
+
+        <div className="space-y-2">
+          <Label htmlFor="lastName" className="text-sm">
+            Last name
+          </Label>
+          <Input id="lastName" name="lastName" autoComplete="family-name" />
+        </div>
+      </div>
+
       <div className="space-y-2">
         <Label htmlFor="email" className="text-sm">
           Email
@@ -21,6 +37,7 @@ const RegisterForm = () => {
           id="email"
           name="email"
           placeholder="you@example.com"
+          autoComplete="email"
           required
         />
       </div>
@@ -29,7 +46,14 @@ const RegisterForm = () => {
         <Label htmlFor="password" className="text-sm">
           Password
         </Label>
-        <Input type="password" id="password" name="password" required />
+        <Input
+          type="password"
+          id="password"
+          name="password"
+          minLength={8}
+          autoComplete="new-password"
+          required
+        />
       </div>
 
       {state?.error && <p className="text-sm text-red-500">{state.error}</p>}

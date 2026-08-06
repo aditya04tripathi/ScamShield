@@ -18,41 +18,68 @@ env:
   REGISTRY: ghcr.io
 
 jobs:
+  changes:
+    name: Detect backend changes
+    runs-on: ubuntu-24.04
+    outputs:
+      backend: ${{ steps.filter.outputs.backend }}
+      build_matrix: ${{ steps.matrix.outputs.build_matrix }}
+      merge_matrix: ${{ steps.matrix.outputs.merge_matrix }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Check backend inputs
+        id: filter
+        env:
+          BEFORE_SHA: ${{ github.event.before }}
+          CURRENT_SHA: ${{ github.sha }}
+          EVENT_NAME: ${{ github.event_name }}
+          REF_TYPE: ${{ github.ref_type }}
+        run: |
+          if [[ "$EVENT_NAME" == "workflow_dispatch" || "$REF_TYPE" == "tag" ]]; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          if [[ -z "$BEFORE_SHA" || "$BEFORE_SHA" == "0000000000000000000000000000000000000000" ]]; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+
+          changed_files="$(git diff --name-only "$BEFORE_SHA" "$CURRENT_SHA")"
+          if grep -Eq '^(backend/|docker-compose\.yml|docker-compose\.prod\.yml|\.github/workflows/docker-publish\.yaml)$' <<< "$changed_files"; then
+            echo "backend=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "backend=false" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Generate build matrices
+        id: matrix
+        env:
+          BACKEND_CHANGED: ${{ steps.filter.outputs.backend }}
+        run: |
+          if [[ "$BACKEND_CHANGED" == "true" ]]; then
+            cat >> "$GITHUB_OUTPUT" <<'EOF'
+          build_matrix={"include":[{"component":"frontend","image_suffix":"","context":".","dockerfile":"Dockerfile","platform":"linux/amd64","arch":"amd64","runner":"ubuntu-24.04"},{"component":"frontend","image_suffix":"","context":".","dockerfile":"Dockerfile","platform":"linux/arm64","arch":"arm64","runner":"ubuntu-24.04-arm"},{"component":"backend","image_suffix":"-backend","context":"./backend","dockerfile":"./backend/Dockerfile","platform":"linux/amd64","arch":"amd64","runner":"ubuntu-24.04"},{"component":"backend","image_suffix":"-backend","context":"./backend","dockerfile":"./backend/Dockerfile","platform":"linux/arm64","arch":"arm64","runner":"ubuntu-24.04-arm"}]}
+          merge_matrix={"include":[{"component":"frontend","image_suffix":""},{"component":"backend","image_suffix":"-backend"}]}
+          EOF
+          else
+            cat >> "$GITHUB_OUTPUT" <<'EOF'
+          build_matrix={"include":[{"component":"frontend","image_suffix":"","context":".","dockerfile":"Dockerfile","platform":"linux/amd64","arch":"amd64","runner":"ubuntu-24.04"},{"component":"frontend","image_suffix":"","context":".","dockerfile":"Dockerfile","platform":"linux/arm64","arch":"arm64","runner":"ubuntu-24.04-arm"}]}
+          merge_matrix={"include":[{"component":"frontend","image_suffix":""}]}
+          EOF
+          fi
+
   build:
     name: Build ${{ matrix.component }} ${{ matrix.arch }}
+    needs: changes
     runs-on: ${{ matrix.runner }}
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - component: frontend
-            image_suffix: ""
-            context: .
-            dockerfile: Dockerfile
-            platform: linux/amd64
-            arch: amd64
-            runner: ubuntu-24.04
-          - component: frontend
-            image_suffix: ""
-            context: .
-            dockerfile: Dockerfile
-            platform: linux/arm64
-            arch: arm64
-            runner: ubuntu-24.04-arm
-          - component: backend
-            image_suffix: "-backend"
-            context: ./backend
-            dockerfile: ./backend/Dockerfile
-            platform: linux/amd64
-            arch: amd64
-            runner: ubuntu-24.04
-          - component: backend
-            image_suffix: "-backend"
-            context: ./backend
-            dockerfile: ./backend/Dockerfile
-            platform: linux/arm64
-            arch: arm64
-            runner: ubuntu-24.04-arm
+      matrix: ${{ fromJSON(needs.changes.outputs.build_matrix) }}
 
     steps:
       - name: Checkout
@@ -87,16 +114,13 @@ jobs:
 
   merge:
     name: Merge ${{ matrix.component }} manifest
-    needs: build
+    needs:
+      - changes
+      - build
     runs-on: ubuntu-24.04
     strategy:
       fail-fast: false
-      matrix:
-        include:
-          - component: frontend
-            image_suffix: ""
-          - component: backend
-            image_suffix: "-backend"
+      matrix: ${{ fromJSON(needs.changes.outputs.merge_matrix) }}
 
     steps:
       - name: Checkout

@@ -1,11 +1,18 @@
 import { AppHeader } from "@/components/shared/app-header";
-import Footer from "@/components/shared/footer-3";
+import { getSession } from "@/lib/auth";
+import { redirect } from "next/navigation";
 
-export default function ApplicationLayout({
+export default async function ApplicationLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+  const session = await getSession();
+
+  if (!session) {
+    redirect("/auth/sign-in");
+  }
+
   return (
     <div className="flex min-h-screen flex-col">
       <AppHeader />

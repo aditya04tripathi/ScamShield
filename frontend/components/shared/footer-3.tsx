@@ -4,7 +4,6 @@ import { Logo } from "@/components/shared/logo";
 const links = [
   { label: "Home", href: "/" },
   { label: "Features", href: "/#features" },
-  { label: "Team", href: "/team" },
   { label: "About", href: "/about" },
 ];
 
