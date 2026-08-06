@@ -1,5 +1,5 @@
 from app.models.schemas import DetectionResult
-from transformers import pipeline
+from app.services.detection.model_loader import load_cached_text_classifier
 import torch
 import re
 import logging
@@ -13,9 +13,8 @@ class UrlProcessor:
         device = 0 if torch.cuda.is_available() else -1
         try:
             logger.info("Loading URL Phishing Detection Model (BERT)...")
-            self.classifier = pipeline(
-                "text-classification",
-                model="darshan8950/phishing_url_detection_BERT",
+            self.classifier = load_cached_text_classifier(
+                "darshan8950/phishing_url_detection_BERT",
                 device=device,
             )
             logger.info("URL Phishing Detection Model loaded successfully.")

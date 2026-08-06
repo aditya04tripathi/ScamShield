@@ -58,6 +58,9 @@ services:
       LLM_MODEL: qwen2.5:0.5b
       REDIS_URL: redis://redis:6379/0
       HF_HOME: /app/models
+      TRANSFORMERS_OFFLINE: "1"
+      HF_HUB_OFFLINE: "1"
+      HF_DATASETS_OFFLINE: "1"
       BACKEND_CORS_ORIGINS: '["http://localhost:49155","http://frontend:49155"]'
     networks:
       - backend_internal

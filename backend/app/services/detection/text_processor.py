@@ -1,5 +1,5 @@
 from app.models.schemas import DetectionResult
-from transformers import pipeline
+from app.services.detection.model_loader import load_cached_text_classifier
 import torch
 import logging
 
@@ -11,12 +11,10 @@ class TextProcessor:
         device = 0 if torch.cuda.is_available() else -1
         try:
             logger.info("Loading Text Detection Model (DeBERTa-v3)...")
-            self.classifier = pipeline(
-                "text-classification",
-                model="desklib/ai-text-detector-v1.01",
+            self.classifier = load_cached_text_classifier(
+                "desklib/ai-text-detector-v1.01",
                 device=device,
                 top_k=None,
-                model_kwargs={"ignore_mismatched_sizes": True},
             )
             logger.info("Text Detection Model loaded successfully.")
         except Exception as e:

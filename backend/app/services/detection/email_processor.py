@@ -1,5 +1,5 @@
 from app.models.schemas import DetectionResult
-from transformers import pipeline
+from app.services.detection.model_loader import load_cached_text_classifier
 import torch
 import logging
 
@@ -11,9 +11,8 @@ class EmailProcessor:
         device = 0 if torch.cuda.is_available() else -1
         try:
             logger.info("Loading Email Detection Model (DistilBERT)...")
-            self.classifier = pipeline(
-                "text-classification",
-                model="cybersectony/phishing-email-detection-distilbert_v2.1",
+            self.classifier = load_cached_text_classifier(
+                "cybersectony/phishing-email-detection-distilbert_v2.1",
                 device=device,
                 top_k=None,
             )

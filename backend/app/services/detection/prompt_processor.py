@@ -1,5 +1,5 @@
 from app.models.schemas import DetectionResult
-from transformers import pipeline
+from app.services.detection.model_loader import load_cached_text_classifier
 import torch
 import logging
 
@@ -11,11 +11,9 @@ class PromptProcessor:
         device = 0 if torch.cuda.is_available() else -1
         try:
             logger.info("Loading Prompt Injection Model...")
-            self.classifier = pipeline(
-                "text-classification",
-                model="protectai/deberta-v3-base-prompt-injection-v2",
+            self.classifier = load_cached_text_classifier(
+                "protectai/deberta-v3-base-prompt-injection-v2",
                 device=device,
-                model_kwargs={"ignore_mismatched_sizes": True},
             )
             logger.info("Prompt Injection Model loaded successfully.")
         except Exception as e:

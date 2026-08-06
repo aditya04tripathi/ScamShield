@@ -20,6 +20,10 @@ COPY . .
 
 RUN python preload_models.py
 
+ENV TRANSFORMERS_OFFLINE=1
+ENV HF_HUB_OFFLINE=1
+ENV HF_DATASETS_OFFLINE=1
+
 RUN useradd --create-home --uid 10001 appuser \
     && mkdir -p /app/models /app/data \
     && chown -R appuser:appuser /app
