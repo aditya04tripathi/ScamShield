@@ -96,6 +96,7 @@ services:
       MICROSERVICE_URL: http://backend:8000
       JWT_SECRET_KEY: ${JWT_SECRET_KEY:-change-me-use-at-least-32-characters}
     networks:
+      - frontend_public
       - backend_internal
     depends_on:
       mongo:
@@ -110,5 +111,7 @@ volumes:
   shared_tmp:
 
 networks:
+  frontend_public:
+    driver: bridge
   backend_internal:
     driver: bridge
