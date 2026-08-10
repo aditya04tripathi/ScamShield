@@ -81,7 +81,7 @@ services:
     pull_policy: always
     restart: unless-stopped
     ports:
-      - "${PORT:-49155}:${PORT:-49155}"
+      - "127.0.0.1:${PORT:-49155}:${PORT:-49155}"
     volumes:
       - shared_tmp:/tmp
     environment:
