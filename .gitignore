@@ -12,3 +12,4 @@ env/
 *.db
 backend/models/
 **/*.mmd
+.pnpm-store/
