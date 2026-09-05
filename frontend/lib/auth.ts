@@ -44,7 +44,7 @@ export async function createSession(user: {
   cookieStore.set("session", session, {
     expires,
     httpOnly: true,
-    secure: false, // Changed from production check to ensure compatibility in local Docker/HTTP environments
+    secure: false,
     sameSite: "lax",
     path: "/",
   });
