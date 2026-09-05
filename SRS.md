@@ -23,7 +23,7 @@ ScamShield consists of a FastAPI backend orchestration layer, a Next.js frontend
 
 ### 2.3 Operating Environment
 
-- **Platform**: Cross-platform (Linux/macOS recommended) via Docker.
+- **Platform**: Cross-platform (Linux/macOS recommended); frontend deploys on Railway.
 - **Models**: Local execution using Ollama (Qwen 2.5) and Hugging Face Transformers.
 - **Database**: MongoDB for scan history and user data.
 - **Cache**: Redis for task state and results.
@@ -69,7 +69,7 @@ ScamShield consists of a FastAPI backend orchestration layer, a Next.js frontend
 
 - **Language**: Python 3.11+ (Backend), TypeScript/Next.js (Frontend).
 - **Inference**: Must support local inference to ensure user privacy.
-- **Containerization**: Entire stack must be deployable via Docker Compose.
+- **Deployment**: Frontend must be deployable on Railway; backend runs as a local or separately hosted FastAPI service.
 
 ## 6. External Interface Requirements
 
@@ -79,7 +79,7 @@ ScamShield consists of a FastAPI backend orchestration layer, a Next.js frontend
 
 ## 7. Assumptions and Dependencies
 
-- Users have Docker and Docker Compose installed.
+- Users have Bun (frontend) and Python 3.11+ (backend) installed.
 - System has sufficient memory (8GB+) to run machine learning models and Ollama.
 
 ## 8. Acceptance Criteria

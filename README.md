@@ -19,7 +19,7 @@ Digital scams are becoming increasingly sophisticated. ScamShield provides a uni
 - **Frontend**: Next.js 15, Tailwind CSS, shadcn/ui, Mongodb.
 - **Backend**: FastAPI, Python 3.11, Redis.
 - **ML/AI**: Hugging Face Transformers, Librosa, Ollama (Qwen 2.5).
-- **Deployment**: Docker, Docker Compose.
+- **Deployment**: Railway (frontend), local processes for backend/ML.
 
 ## Architecture Overview
 
@@ -34,8 +34,10 @@ The system follows a microservices-inspired architecture:
 
 ### Prerequisites
 
-- [Docker & Docker Compose](https://docs.docker.com/get-docker/)
-- 8GB+ RAM (Recommended for local model inference)
+- [Bun](https://bun.sh/) (frontend)
+- Python 3.11+ (backend)
+- FFmpeg (audio processing)
+- 8GB+ RAM (recommended for local model inference)
 
 ### Steps
 
@@ -46,19 +48,31 @@ The system follows a microservices-inspired architecture:
    cd ScamShield
    ```
 
-2. **Run with Docker Compose**:
+2. **Backend**:
 
    ```bash
-   docker compose up --build
+   cd backend
+   python -m venv venv
+   source venv/bin/activate
+   pip install -r requirements.txt
+   uvicorn main:app --reload
    ```
 
-3. **Access the application**:
+3. **Frontend**:
+
+   ```bash
+   cd frontend
+   bun install
+   bun dev
+   ```
+
+4. **Access the application**:
    - Frontend: `http://localhost:3000`
    - Backend API: `http://localhost:8000`
 
 ## Configuration
 
-Environment variables are managed within `docker-compose.yml` and local `.env` files for each subproject (backend/frontend).
+Copy `.env.example` for shared values and create local `.env` / `.env.local` files under `backend/` and `frontend/` as needed. Key frontend vars: `MONGODB_URI`, `MICROSERVICE_URL`, `JWT_SECRET_KEY`.
 
 ## Usage
 
