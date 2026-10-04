@@ -6,7 +6,7 @@ x-logging: &logging
     max-file: "3"
 services:
   app:
-    image: ${IMAGE_PREFIX:-ghcr.io/aditya04tripathi/scamshield}-frontend:${IMAGE_TAG:-latest}
+    image: ${IMAGE_PREFIX:-ghcr.io/aditya04tripathi/scamshield}:${IMAGE_TAG:-latest}
     restart: unless-stopped
     ports:
       - "${APP_BIND_ADDRESS:-0.0.0.0}:${APP_PORT:-3000}:3000"

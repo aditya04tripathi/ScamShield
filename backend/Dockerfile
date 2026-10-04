@@ -8,6 +8,7 @@ COPY backend/requirements.txt ./
 RUN pip install --no-cache-dir torch --index-url https://download.pytorch.org/whl/cpu && \
     pip install --no-cache-dir -r requirements.txt 'transformers<5' sentencepiece protobuf
 COPY backend/ ./
+RUN PYTHONPATH=. pytest -q tests/test_llm_orchestrator.py
 RUN python download_models.py
 
 FROM python:3.11-slim-bookworm AS runner

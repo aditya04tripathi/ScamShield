@@ -15,7 +15,10 @@ class Settings(BaseSettings):
     BACKEND_CORS_ORIGINS: List[str] = ["http://localhost:3000", "http://localhost:8000"]
 
     OLLAMA_BASE_URL: str = "http://localhost:11434"
-    LLM_MODEL: str = "qwen2.5:0.5b"
+    LLM_MODEL: str = "granite3.1-moe:3b"
+    LLM_CONTEXT_SIZE: int = 4096
+    LLM_MAX_TOKENS: int = 512
+    LLM_TIMEOUT_SECONDS: float = 90
     
     DATABASE_URL: str = "sqlite:///./scam_detection.db"
 

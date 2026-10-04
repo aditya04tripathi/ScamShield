@@ -18,7 +18,7 @@ Digital scams are becoming increasingly sophisticated. ScamShield provides a uni
 
 - **Frontend**: Next.js 15, Tailwind CSS, shadcn/ui, Mongodb.
 - **Backend**: FastAPI, Python 3.11, Redis.
-- **ML/AI**: Hugging Face Transformers, Librosa, Ollama (Qwen 2.5).
+- **ML/AI**: Hugging Face Transformers, Librosa, Ollama (Granite 3.1 MoE 3B Q4).
 - **Deployment**: Pre-built GHCR containers on Fedora, with native Ollama.
 
 ## Architecture Overview
@@ -93,7 +93,7 @@ See [Fedora deployment instructions](docs/deployment/README.md) for image publis
 
 ## Limitations and Assumptions
 
-- The system assumes local hardware is capable of running small-scale LLMs (e.g., Qwen 0.5B/1.5B).
+- The system assumes local hardware is capable of running small-scale LLMs (Granite 3.1 MoE 3B Q4 by default).
 - Audio analysis currently focuses on timbre and pitch stability.
 
 ## License

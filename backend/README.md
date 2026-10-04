@@ -69,7 +69,7 @@ Configuration is managed in `app/core/config.py`. Key environment variables incl
 
 - `OLLAMA_BASE_URL`: URL for the local Ollama instance.
 - `REDIS_URL`: Connection string for Redis.
-- `LLM_MODEL`: The LLM model name (e.g., `qwen2.5:0.5b`).
+- `LLM_MODEL`: The LLM model name (`granite3.1-moe:3b`, Q4_K_M by default).
 
 ## Documentation
 
@@ -79,3 +79,5 @@ Configuration is managed in `app/core/config.py`. Key environment variables incl
 ## License
 
 Licensed under the [MIT License](../LICENSE).
+
+The LLM client uses role-tagged chat messages and Ollama applies Granite’s native template. JSON-schema output validates report fields; async generation has a 90-second timeout and falls back to a score-aware rule-based report. Configure `LLM_CONTEXT_SIZE`, `LLM_MAX_TOKENS`, and `LLM_TIMEOUT_SECONDS` to tune resource use.

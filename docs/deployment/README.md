@@ -4,7 +4,7 @@ ScamShield runs pre-built Next.js and CPU inference images with MongoDB. Ollama 
 
 ## Publish images
 
-Push to `main` or `dev` to publish native AMD64 images. The Docker Build & Publish workflow can optionally build ARM64 on `ubuntu-24.04-arm` and merge the native images. No QEMU is used. Image names are `ghcr.io/aditya04tripathi/scamshield-frontend` and `ghcr.io/aditya04tripathi/scamshield-backend`. Tags include the full commit SHA, branch name, and `latest` on main. Deploy using the full commit SHA to keep both services on the same revision.
+Push to `main` or `dev` to publish native AMD64 images. The Docker Build & Publish workflow can optionally build ARM64 on `ubuntu-24.04-arm` and merge the native images. No QEMU is used. Image names are `ghcr.io/aditya04tripathi/scamshield` and `ghcr.io/aditya04tripathi/scamshield-backend`. Tags include the full commit SHA, branch name, and `latest` on main. Deploy using the full commit SHA to keep both services on the same revision.
 
 ## Native Ollama
 

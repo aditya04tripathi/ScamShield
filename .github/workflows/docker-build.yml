@@ -54,7 +54,7 @@ jobs:
           file: ${{ matrix.service }}/Dockerfile
           platforms: linux/${{ matrix.platform.arch }}
           push: true
-          tags: ${{ needs.prepare.outputs.image }}-${{ matrix.service }}:${{ github.sha }}-${{ matrix.platform.arch }}
+          tags: ${{ needs.prepare.outputs.image }}${{ matrix.service == 'backend' && '-backend' || '' }}:${{ github.sha }}-${{ matrix.platform.arch }}
           cache-from: type=gha,scope=${{ matrix.service }}-${{ matrix.platform.arch }}
           cache-to: type=gha,mode=max,scope=${{ matrix.service }}-${{ matrix.platform.arch }}
   publish:
@@ -73,14 +73,14 @@ jobs:
       - uses: docker/metadata-action@v5
         id: meta
         with:
-          images: ${{ needs.prepare.outputs.image }}-${{ matrix.service }}
+          images: ${{ needs.prepare.outputs.image }}${{ matrix.service == 'backend' && '-backend' || '' }}
           tags: |
             type=ref,event=branch
             type=sha,format=long,prefix=
             type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
       - name: Publish image manifest
         env:
-          IMAGE: ${{ needs.prepare.outputs.image }}-${{ matrix.service }}
+          IMAGE: ${{ needs.prepare.outputs.image }}${{ matrix.service == 'backend' && '-backend' || '' }}
           TAGS: ${{ steps.meta.outputs.tags }}
           INCLUDE_ARM64: ${{ inputs.include_arm64 }}
         run: |
