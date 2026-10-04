@@ -8,11 +8,27 @@ Push to `main` or `dev` to publish native AMD64 images. The Docker Build & Publi
 
 ## Native Ollama
 
-Install Ollama using its official Linux installer and enable its systemd service. On Fedora's i3-5005U / 16 GB host, use `granite3.1-moe:3b` (Q4_K_M, approximately 2 GB). CPU inference is appropriate for this machine's older GPUs. Limit context to 4096, loaded models to one, and parallel requests to one. Bind Ollama to the Docker host bridge IP rather than the LAN; do not open port 11434 in the external firewall. Set `OLLAMA_BASE_URL=http://host.docker.internal:11434` in the deployment environment. The daemon must start after Docker creates its bridge.
+Install Ollama using its official Linux installer and enable its systemd service. On Fedora's i3-5005U / 16 GB host, use `granite3.1-moe:3b` (Q4_K_M, approximately 2 GB). The Radeon R5 M330 can be detected by Ollama through Vulkan after installing `mesa-vulkan-drivers` and `vulkan-tools`; ROCm does not support this card. Its 2 GB VRAM can require partial CPU/GPU offloading. A short JSON chat test on this host confirmed 45% GPU / 55% CPU offloading at a 4096-token context. Confirm actual offloading with `ollama ps` after generation. Limit context to 4096, loaded models to one, and parallel requests to one. Bind Ollama to the Docker host bridge IP rather than the LAN; do not open port 11434 in the external firewall. Set `OLLAMA_BASE_URL=http://host.docker.internal:11434` in the deployment environment. The daemon must start after Docker creates its bridge.
 
 ```bash
 ollama pull granite3.1-moe:3b
 ```
+
+On this Fedora server, `/etc/systemd/system/ollama.service.d/scamshield.conf` contains:
+
+```ini
+[Unit]
+After=docker.service
+Requires=docker.service
+[Service]
+Environment="OLLAMA_HOST=172.17.0.1:11434"
+Environment="OLLAMA_CONTEXT_LENGTH=4096"
+Environment="OLLAMA_NUM_PARALLEL=1"
+Environment="OLLAMA_MAX_LOADED_MODELS=1"
+Environment="OLLAMA_NO_CLOUD=1"
+```
+
+The CLI defaults to localhost, so use `OLLAMA_HOST=172.17.0.1:11434 ollama pull granite3.1-moe:3b` and the same prefix for `ollama ps` or `ollama list`. The daemon is enabled at boot and managed by systemd; do not start a second unmanaged `ollama serve` process.
 
 ## Start ScamShield
 
@@ -38,3 +54,7 @@ df -h /
 ```
 
 To roll back, set `IMAGE_TAG` to a previous full SHA and rerun `deploy.sh`. Back up MongoDB and the backend database volumes before schema changes. Never prune volumes to free image storage. Inference startup can take a few minutes while classifiers load. A healthy API confirms successful model initialization but does not validate scan quality; perform a scan after deployment.
+
+## Inspected host
+
+`fedora` / `192.168.5.73`: Intel i3-5005U, 2 cores / 4 threads, 15.5 GiB RAM, Radeon R5 M330 (2 GiB VRAM). The XFS root logical volume was expanded online to all available LVM capacity (approximately 929 GiB). ScamShield reserves frontend port `3004` in `/root/ports.csv`. The existing Cloudflare tunnel can route `shield.adityatripathi.dev` directly to `http://127.0.0.1:3004`; tunnel configuration is managed separately by the user.
