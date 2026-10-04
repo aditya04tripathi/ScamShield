@@ -19,7 +19,7 @@ Digital scams are becoming increasingly sophisticated. ScamShield provides a uni
 - **Frontend**: Next.js 15, Tailwind CSS, shadcn/ui, Mongodb.
 - **Backend**: FastAPI, Python 3.11, Redis.
 - **ML/AI**: Hugging Face Transformers, Librosa, Ollama (Qwen 2.5).
-- **Deployment**: Railway (frontend), local processes for backend/ML.
+- **Deployment**: Pre-built GHCR containers on Fedora, with native Ollama.
 
 ## Architecture Overview
 
@@ -73,6 +73,10 @@ The system follows a microservices-inspired architecture:
 ## Configuration
 
 Copy `.env.example` for shared values and create local `.env` / `.env.local` files under `backend/` and `frontend/` as needed. Key frontend vars: `MONGODB_URI`, `MICROSERVICE_URL`, `JWT_SECRET_KEY`.
+
+## VPS Deployment
+
+See [Fedora deployment instructions](docs/deployment/README.md) for image publishing, native Ollama, persistent storage, and port allocation.
 
 ## Usage
 
